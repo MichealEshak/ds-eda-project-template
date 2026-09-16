@@ -1,128 +1,62 @@
-# King County Housing EDA Project Template
+# King County Housing EDA — Buyer Recommendation for Thomas Hansen
 
-This is the starter template for the Exploratory Data Analysis (EDA) project. You will work with the King County housing dataset (home sales in and around Seattle, USA), uncover what drives house prices, and turn your findings into insights and recommendations for a client you choose.
+An exploratory data analysis (EDA) of King County (Seattle, USA) home sales, built to answer three concrete questions for a fictional home buyer, **Thomas Hansen**: can he afford a home big enough for his family, which neighborhood fits him best, and when should he buy.
 
-## Learning Objectives
+> This repository started from the [`ds-eda-project-template`](https://github.com/neuefische/ds-eda-project-template). The original template instructions (learning objectives, generic setup walkthrough) have been kept at [**TEMPLATE_README.md**](TEMPLATE_README.md). This file replaces it as the map of the finished project.
 
-By the end of this repository, you should be able to:
+## Client brief
 
-- Connect to a PostgreSQL database from Python and load query results into a pandas DataFrame.
-- Frame an exploratory data analysis around clear research questions and hypotheses.
-- Clean and wrangle a real-world dataset by handling missing values, outliers, and feature transformations.
-- Explore distributions and the relationships between features and the target variable (price).
-- Translate your analysis into at least three insights and three client-specific recommendations.
-- Present your work to a non-technical audience.
+| | |
+|---|---|
+| **Client** | Thomas Hansen (buyer, fictional) |
+| **Household** | 5 kids — needs ≥ 4 bedrooms |
+| **Budget** | "No money" — capped at the 25th percentile of all sale prices |
+| **Wants** | A "nice" (above-average condition/grade), socially dense (family-friendly) neighborhood |
+| **Open questions** | Best **location** and best **timing** to buy |
 
-## Learning Path
+## Repository contents
 
-Work through the files in order. Start with the assignment to understand the goal, follow the workflow as your guide, fetch the data, then run your analysis in the EDA notebook.
+Work through the analysis in this order:
 
-> [!TIP]
-> The data lives in the **eda** schema of the database and is split across two tables. Before fetching anything in code, connect with DBeaver and explore that schema: inspect both tables, check [**Column Names**](column_names.md) for what each field means, and work out how to join them. Once you have a working `JOIN`, use it as the query in [**03 - Fetching the Data**](03_fetching_the_data_eda.ipynb) to load the combined dataset into pandas.
+| File | Description |
+| --- | --- |
+| [**01_assignment.md**](01_assignment.md) | The original project brief: dataset, tasks, deliverables, and the client roster this project's client (Thomas Hansen) was chosen from. |
+| [**02_workflow.md**](02_workflow.md) | The recommended EDA workflow this analysis follows: understand → question → clean → explore relationships → present. |
+| [**03_fetching_the_data_eda.ipynb**](03_fetching_the_data_eda.ipynb) | Connects to the PostgreSQL `eda` schema (psycopg2 / SQLAlchemy), joins the house-details and sale-price/date tables, and exports the combined dataset to `data/eda.csv`. |
+| [**04_eda.ipynb**](04_eda.ipynb) | The main analysis notebook: data overview and cleaning, three research hypotheses, and the insights/recommendations for Thomas Hansen. See [Analysis walkthrough](#analysis-walkthrough) below. |
+| [**column_names.md**](column_names.md) | Data dictionary describing every column in the King County housing dataset. |
 
-| File / Folder                                                   | Description                                                                                                              |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| [**01 - Assignment**](01_assignment.md)                      | The project brief: the dataset, your tasks, deliverables, and the list of clients to choose from.                        |
-| [**02 - Workflow**](02_workflow.md)                          | A recommended EDA workflow, from understanding and questioning the data through cleaning, relationships, and presenting. |
-| [**03 - Fetching the Data**](03_fetching_the_data_eda.ipynb) | Connect to the PostgreSQL database with psycopg2 and SQLAlchemy, then pull the data into a pandas DataFrame.             |
-| [**04 - EDA**](04_eda.ipynb)                                 | Starter notebook for your exploratory data analysis.                                                                     |
-| [**Column Names**](column_names.md)                          | Data dictionary describing each column in the King County housing dataset.                                               |
+### Supporting files
 
-### Additional Folders and Files
+| File / Folder | Description |
+| --- | --- |
+| [**data/**](data/) | Holds `eda.csv`, the dataset exported by notebook 03. Tracked as a folder, but the CSV itself is git-ignored — re-run notebook 03 to regenerate it. |
+| [**.env.example**](.env.example) | Template for the database credentials. Copy to `.env` and fill in your own values (see [Setup](#setup)). |
+| [**pyproject.toml**](pyproject.toml) / [**uv.lock**](uv.lock) | Project dependencies, managed with [`uv`](https://docs.astral.sh/uv/). |
+| [**TEMPLATE_README.md**](TEMPLATE_README.md) | The original template README: full step-by-step repo/environment setup instructions and learning objectives. Kept for reference. |
+| [**presentation/**](presentation/) | The 10-minute, non-technical slide deck for Thomas Hansen: [Thomas_Hansen_Housing_Recommendation.pptx](presentation/Thomas_Hansen_Housing_Recommendation.pptx) and a [PDF export](presentation/Thomas_Hansen_Housing_Recommendation.pdf) of the same 11 slides. |
 
-| File / Folder                           | Description                                                                                    |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [**Data**](data/)                    | Where you save the dataset CSV. The folder is tracked, but its data files are kept out of git. |
-| [**.env.example**](.env.example)     | Template for the database credentials. Copy it to `.env` and fill in your values.            |
-| [**pyproject.toml**](pyproject.toml) | Project configuration and dependencies.                                                        |
-| [**uv.lock**](uv.lock)               | Dependency lock file.                                                                          |
+## Analysis walkthrough (`04_eda.ipynb`)
+
+1. **Data overview & cleaning** — 21,597 sales, 21 columns, May 2014–May 2015, 70 zipcodes. Drops one 33-bedroom data-entry error and treats missing `waterfront` values as "not waterfront."
+2. **Hypothesis 1 — Feasibility**: at Thomas's budget (≤ 25th percentile of price), are there enough 4+ bedroom homes? → Yes, over a thousand.
+3. **Hypothesis 2 — Location**: which zipcode is both affordable/family-sized ("social" density) and "nice" (above-average condition/grade)? → **Zipcode 98023** is the 1st choice (strongest social density, lower avg price, better avg condition); **98092** is the 2nd choice / backup (marginally higher avg grade, but far fewer qualifying homes and pricier). Visualized on a geographic scatter plot with a colorblind-safe (blue/yellow) palette.
+4. **Hypothesis 3 — Timing**: does price vary meaningfully by sale month? → Only ~8% swing across the year — location matters far more than timing, though December is marginally cheaper than November.
+5. **Insights & recommendations** — the notebook closes with 3 insights and 3 client-facing recommendations for Thomas Hansen.
 
 ## Setup
 
 > [!NOTE]
-> Throughout these steps, text in angle brackets like `<repo-name>` is a **placeholder**. Replace it, including the `< >` brackets, with your own value. For example, `cd <repo-name>` becomes `cd ds-eda-project-template`.
-
-### 1. Create the Repository from the Template
-
-Click **Use this template** on GitHub.
-
-When creating the repository:
-
-- Set yourself as the **Owner**
-- Choose a repository name
-- Disable **Include all branches**
-- Click **Create repository**
-
-> [!IMPORTANT]
-> If you are working in pairs or groups, only **one person** should complete this step.
----
-
-### 2. Add Collaborators (Pairs/Groups Only)
-
-If working with teammates:
-
-1. Open the repository on GitHub
-2. Go to **Settings → Collaborators**
-3. Add your teammates as collaborators
-4. Share the repository link with your team
-
-Teammates should accept the invitation before continuing.
-
----
-
-### 3. Clone the Repository
-
-Copy the SSH URL from the **Code** button on GitHub, then run:
+> Full step-by-step instructions (repo creation, collaborators, cloning, environment, credentials) live in [**TEMPLATE_README.md**](TEMPLATE_README.md). Quick version below.
 
 ```bash
-git clone <copied-ssh-url>
+git clone <this-repo-url>
+cd ds-eda-project-template
+uv sync                  # installs dependencies into .venv/
+cp .env.example .env     # then fill in your DB credentials
 ```
 
-The copied SSH URL will look like `git@github.com:<your-username>/<repo-name>.git`.
-
----
-
-### 4. Move into the Project Folder and Install Dependencies
-
-This installs all dependencies and creates a virtual environment in `.venv/`.
-
-```bash
-cd <repo-name>
-uv sync
-```
-
-> [!TIP]
-> Need a library that is not installed yet (for example a mapping)? Add it with `uv add <package-name>`. This updates `pyproject.toml` and `uv.lock` and installs it into your `.venv`. Commit both files; teammates then run uv sync after pulling to get the same environment.
-
----
-
-### 5. Set up your Database Credentials
-
-The data-fetching notebook reads the database connection details from a `.env` file. Copy the template and fill in your own values:
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and replace the placeholders with the credentials for the King County housing database (the same ones you use in DBeaver). These values feed [**03 - Fetching the Data**](03_fetching_the_data_eda.ipynb).
-
-> [!CAUTION]
-> `.env` holds secrets and must never be committed. It is already listed in `.gitignore`. Only `.env.example`, with placeholder values, belongs in the repository.
-
----
-
-### 6. Open the Notebooks
-
-> [!NOTE]
-> Make sure you open VS Code from the project root so it automatically detects the environment created by uv sync.
-
-Launch VS Code in the project root folder:
-
-```bash
-code .
-```
-
-Then open a notebook and select the Python environment created by `uv sync` as the kernel.
+Open the folder in VS Code (`code .`), open a notebook, and select the `uv`-managed Python environment as the kernel. Run notebook 03 first to populate `data/eda.csv`, then notebook 04.
 
 ## References & Further Reading
 
