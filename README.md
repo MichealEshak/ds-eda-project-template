@@ -34,15 +34,16 @@ Work through the analysis in this order:
 | [**.env.example**](.env.example) | Template for the database credentials. Copy to `.env` and fill in your own values (see [Setup](#setup)). |
 | [**pyproject.toml**](pyproject.toml) / [**uv.lock**](uv.lock) | Project dependencies, managed with [`uv`](https://docs.astral.sh/uv/). |
 | [**TEMPLATE_README.md**](TEMPLATE_README.md) | The original template README: full step-by-step repo/environment setup instructions and learning objectives. Kept for reference. |
-| [**presentation/**](presentation/) | The 10-minute, non-technical slide deck for Thomas Hansen: [Thomas_Hansen_Housing_Recommendation.pptx](presentation/Thomas_Hansen_Housing_Recommendation.pptx) and a [PDF export](presentation/Thomas_Hansen_Housing_Recommendation.pdf) of the same 11 slides. |
+| [**presentation/**](presentation/) | The 10-minute, non-technical slide deck for Thomas Hansen: [Thomas_Hansen_Housing_Recommendation.pptx](presentation/Thomas_Hansen_Housing_Recommendation.pptx) and a [PDF export](presentation/Thomas_Hansen_Housing_Recommendation.pdf) of the same 12 slides. |
 
 ## Analysis walkthrough (`04_eda.ipynb`)
 
 1. **Data overview & cleaning** — 21,597 sales, 21 columns, May 2014–May 2015, 70 zipcodes. Drops one 33-bedroom data-entry error and treats missing `waterfront` values as "not waterfront."
-2. **Hypothesis 1 — Feasibility**: at Thomas's budget (≤ 25th percentile of price), are there enough 4+ bedroom homes? → Yes, over a thousand.
-3. **Hypothesis 2 — Location**: which zipcode is both affordable/family-sized ("social" density) and "nice" (above-average condition/grade)? → **Zipcode 98023** is the 1st choice (strongest social density, lower avg price, better avg condition); **98092** is the 2nd choice / backup (marginally higher avg grade, but far fewer qualifying homes and pricier). Visualized on a geographic scatter plot with a colorblind-safe (blue/yellow) palette.
-4. **Hypothesis 3 — Timing**: does price vary meaningfully by sale month? → Only ~8% swing across the year — location matters far more than timing, though December is marginally cheaper than November.
-5. **Insights & recommendations** — the notebook closes with 3 insights and 3 client-facing recommendations for Thomas Hansen.
+2. **Correlation heatmap** — a quick look at how the numeric features relate to each other and to `price` before committing to specific hypotheses (e.g. `sqft_living` and `grade` correlate most with `price`; `sqft_above`/`sqft_living` are redundant with each other).
+3. **Hypothesis 1 — Feasibility**: at Thomas's budget (≤ 25th percentile of price), are there enough 4+ bedroom homes? → Yes, over a thousand.
+4. **Hypothesis 2 — Location**: which zipcode is both affordable/family-sized ("social" density) and "nice" (above-average condition/grade)? → **Zipcode 98023** is the 1st choice (strongest social density, lower avg price, better avg condition); **98092** is the 2nd choice / backup (marginally higher avg grade, but far fewer qualifying homes and pricier). Visualized on a geographic scatter plot with a colorblind-safe (blue/yellow) palette.
+5. **Hypothesis 3 — Timing**: does price vary meaningfully by sale month? → Only ~8% swing in the county-wide average — but that average hides more movement within each recommended zipcode individually (98023 swings ~17%, cheapest in June; 98092 swings ~15%, cheapest in May). Location still matters far more than timing, though the aggregate "buy in December" advice doesn't hold for either zipcode specifically.
+6. **Insights & recommendations** — the notebook closes with 3 insights and 3 client-facing recommendations for Thomas Hansen.
 
 ## Setup
 
